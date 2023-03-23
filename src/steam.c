@@ -231,15 +231,15 @@ void url_encode (const char *url, char *url_enc, char *method)
  *                    nmemb                                                  *
  *                    userp                                                  *
  *                                                                           *
- * Output values(s) : realsize - NULL-terminated string                      *
+ * Output values(s) : real_size - NULL-terminated string                      *
  *                                                                           *
  * Return value(s)  : None.                                                  *
  *===========================================================================*/
 static size_t write_memory_callback (void *contents, size_t size, size_t nmemb, void *userp)
 {
-	size_t realsize = size * nmemb;
+	size_t real_size = size * nmemb;
 	Memory *mem = (Memory *)userp;
-	char *ptr = realloc (mem->memory, mem->size + realsize + 1);
+	char *ptr = realloc (mem->memory, mem->size + real_size + 1);
 	char error_message[ERROR_MESSAGE_SIZE] = {0};
 
 	print_debug_information ("Entering the function to "
@@ -254,14 +254,14 @@ static size_t write_memory_callback (void *contents, size_t size, size_t nmemb, 
 	}
 
 	mem->memory = ptr;
-	memcpy (&(mem->memory[mem->size]), contents, realsize);
-	mem->size += realsize;
+	memcpy (&(mem->memory[mem->size]), contents, real_size);
+	mem->size += real_size;
 	mem->memory[mem->size] = 0;
 
 	print_debug_information ("Exiting the function to "
 	                         "write_memory_callback ()", __LINE__);
 
-	return realsize;
+	return real_size;
 }
 
 /*===========================================================================*

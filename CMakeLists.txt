@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10.2)
 
 project(steam_api C)
 
-add_definitions(-Os -Wall -Werror --std=gnu99 -Wmissing-declarations)
+add_definitions(-Os -Wall --std=gnu99 -Wmissing-declarations)
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 

@@ -31,8 +31,8 @@ static void free_login_response (LoginResponse *loginResponse)
 	if (loginResponse->public_key_exp != NULL)
 		free (loginResponse->public_key_exp);
 
-	if (loginResponse->timestamp != NULL)
-		free (loginResponse->timestamp);
+	if (loginResponse->time_stamp != NULL)
+		free (loginResponse->time_stamp);
 
 	if (loginResponse->token_gid != NULL)
 		free (loginResponse->token_gid);
@@ -140,7 +140,7 @@ static char *encode_steam_password (char *password, char *ptr_rsa_key_data,
 
 	get_json_object_as_string (&loginResponse->public_key_mod, parsed_json, "publickey_mod");
 	get_json_object_as_string (&loginResponse->public_key_exp, parsed_json, "publickey_exp");
-	get_json_object_as_string (&loginResponse->timestamp, parsed_json, "timestamp");
+	get_json_object_as_string (&loginResponse->time_stamp, parsed_json, "timestamp");
 	get_json_object_as_string (&loginResponse->token_gid, parsed_json, "token_gid");
 
 	json_object_put (parsed_json);
@@ -149,7 +149,7 @@ static char *encode_steam_password (char *password, char *ptr_rsa_key_data,
 
 	if (loginResponse->public_key_mod == NULL ||
 	    loginResponse->public_key_exp == NULL ||
-	    loginResponse->timestamp == NULL ||
+	    loginResponse->time_stamp == NULL ||
 	    loginResponse->token_gid == NULL)
 	{
 		snprintf (error_message, ERROR_MESSAGE_SIZE, "[ERROR %u] ", __LINE__);
@@ -299,7 +299,7 @@ int8_t steam_login (char *login, char *password, char *two_factor_code)
 	         "rsatimestamp=" "%s" "&"
 	         "donotcache=" "%s",
 	         login, ptr_encode_password, two_factor_code,
-			 loginResponse.timestamp, curr_time_str);
+			 loginResponse.time_stamp, curr_time_str);
 
 	free_login_response (&loginResponse);
 	free (ptr_encode_password);

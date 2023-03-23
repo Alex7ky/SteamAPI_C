@@ -10,7 +10,9 @@ extern char g_html5[256];
 
 int8_t sell_item (InventoryItem, char *);
 int8_t create_buy_order (char *, double, uint32_t, char *, char *);
-int8_t cancel_buy_order (uint64_t buy_order_id);
-int8_t load_buy_order (void);
+int8_t cancel_buy_order (const char *);
+int8_t remove_sell_order (const char *);
+char *load_my_listings (void);
+char *get_market_history (uint32_t, uint32_t);
 
 #endif

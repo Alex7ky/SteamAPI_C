@@ -57,7 +57,7 @@ typedef struct tLoginResponse {
 	uint8_t   success;
 	char     *public_key_mod;
 	char     *public_key_exp;
-	char     *timestamp;
+	char     *time_stamp;
 	char     *token_gid;
 } LoginResponse;
 

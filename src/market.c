@@ -1,6 +1,5 @@
 #include "../inc/market.h"
 #include "../inc/steam.h"
-#include "../inc/steamdef.h"
 
 /*===========================================================================*
  * Function name    : sell_item                                              *
@@ -145,19 +144,15 @@ int8_t create_buy_order (char *market_hash_name, double price_item,
  *                                                                           *
  * Return value(s)  : SUCCESS/FAILURE                                        *
  *===========================================================================*/
-int8_t cancel_buy_order (uint64_t buy_order_id)
+int8_t cancel_buy_order (const char *buy_order_id)
 {
 	char steam_cancel_buy_order_url[URL_SIZE] = {0};
 	char steam_url_referer[URL_SIZE] = {0};
 	char post_data[POST_DATA_SIZE] = {0};
 	char *ptr_data = NULL;
-	char str_buy_order_id[20] = {0};
 
 	print_debug_information ("Entering the function to "
 	                         "cancel_buy_order ()", __LINE__);
-
-	snprintf (str_buy_order_id, sizeof (str_buy_order_id),
-	          "%" PRIu64, buy_order_id);
 
 	snprintf (steam_cancel_buy_order_url, sizeof (steam_cancel_buy_order_url),
 	          URL_STEAM_MARKET "cancelbuyorder/");
@@ -167,15 +162,15 @@ int8_t cancel_buy_order (uint64_t buy_order_id)
 	snprintf (post_data, sizeof (post_data),
 		      "sessionid=" "%s" "&"
 		      "buy_orderid=" "%s",
-		      g_session_id, str_buy_order_id);
+		      g_session_id, buy_order_id);
 
 	ptr_data = curl_general_request (steam_cancel_buy_order_url,
 	                                 steam_url_referer, post_data, 0);
 
-	printf ("Cancel buy order\n");
-	printf ("Response: %s\n", ptr_data);
-	
-	free (ptr_data);
+	if (ptr_data != NULL)
+	{
+		free (ptr_data);
+	}
 
 	print_debug_information ("Exiting the function to "
 	                         "cancel_buy_order ()", __LINE__);
@@ -184,7 +179,49 @@ int8_t cancel_buy_order (uint64_t buy_order_id)
 }
 
 /*===========================================================================*
- * Function name    : load_buy_order                                         *
+ * Function name    : remove_sell_order                                      *
+ *                                                                           *
+ * Description      : This function cancel buy order                         *
+ *                                                                           *
+ * Input values(s)  : sell_order_id                                          *
+ *                                                                           *
+ * Output values(s) : None.                                                  *
+ *                                                                           *
+ * Return value(s)  : SUCCESS/FAILURE                                        *
+ *===========================================================================*/
+int8_t remove_sell_order (const char *sell_order_id)
+{
+	char steam_url[URL_SIZE] = {0};
+	char steam_url_referer[URL_SIZE] = {0};
+	char *ptr_data = NULL;
+	char post_data[POST_DATA_SIZE] = {0};
+
+	print_debug_information ("Entering the function to "
+	                         "remove_sell_order ()", __LINE__);
+
+	snprintf (steam_url, sizeof (steam_url), URL_STEAM_MARKET
+	          "removelisting/%s", sell_order_id);
+
+	snprintf (steam_url_referer, sizeof (steam_url_referer),
+	          URL_STEAM_MARKET);
+
+	snprintf (post_data, sizeof (post_data), "sessionid=" "%s", g_session_id);
+
+	ptr_data = curl_general_request (steam_url, steam_url_referer, post_data, 0);
+
+	if (ptr_data != NULL)
+	{
+		free (ptr_data);
+	}
+
+	print_debug_information ("Exiting the function to "
+	                         "remove_sell_order ()", __LINE__);
+
+	return SUCCESS;
+}
+
+/*===========================================================================*
+ * Function name    : load_my_listings                                       *
  *                                                                           *
  * Description      : This function load buy order                           *
  *                                                                           *
@@ -193,16 +230,16 @@ int8_t cancel_buy_order (uint64_t buy_order_id)
  *                                                                           *
  * Output values(s) : None.                                                  *
  *                                                                           *
- * Return value(s)  : SUCCESS/FAILURE                                        *
+ * Return value(s)  : ptr_data                                               *
  *===========================================================================*/
-int8_t load_buy_order (void)
+char *load_my_listings (void)
 {
 	char steam_buy_url[URL_SIZE] = {0};
 	char steam_url_referer[URL_SIZE] = {0};
 	char *ptr_data = NULL;
 
 	print_debug_information ("Entering the function to "
-	                         "load_buy_order ()", __LINE__);
+	                         "load_my_listings ()", __LINE__);
 
 	snprintf (steam_buy_url, sizeof (steam_buy_url),
 	          "https://steamcommunity.com/market/mylistings?start=0&count=100");
@@ -212,13 +249,40 @@ int8_t load_buy_order (void)
 
 	ptr_data = curl_general_request (steam_buy_url, steam_url_referer, NULL, 0);
 
-	printf ("Load buy order\n");
-	printf ("Response: %s\n", ptr_data);
-	
-	free (ptr_data);
+	print_debug_information ("Exiting the function to "
+	                         "load_my_listings ()", __LINE__);
+
+	return ptr_data;
+}
+
+/*===========================================================================*
+ * Function name    : get_market_history                                     *
+ *                                                                           *
+ * Description      : This function get market history                       *
+ *                                                                           *
+ * Input values(s)  : count_items                                            *
+ *                    start_item                                             *
+ *                                                                           *
+ * Output values(s) : None.                                                  *
+ *                                                                           *
+ * Return value(s)  : None.                                                  *
+ *===========================================================================*/
+char *get_market_history (uint32_t count_items, uint32_t start_item)
+{
+	char steam_url[URL_SIZE] = {0};
+	char steam_url_referer[URL_SIZE] = {0};
+
+	print_debug_information ("Entering the function to "
+	                         "get_inventory ()", __LINE__);
+
+	snprintf (steam_url, sizeof (steam_url), URL_STEAM_COMMUNITY
+	          "market/myhistory/render/?query=&start=%u&count=%u&l=english", start_item, count_items);
+
+	snprintf (steam_url_referer, sizeof (steam_url_referer),
+	          URL_STEAM_MARKET);
 
 	print_debug_information ("Exiting the function to "
-	                         "load_buy_order ()", __LINE__);
+	                         "get_inventory ()", __LINE__);
 
-	return SUCCESS;
+	return curl_general_request (steam_url, steam_url_referer, NULL, 0);
 }
